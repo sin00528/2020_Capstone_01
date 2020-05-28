@@ -4,8 +4,7 @@
 
 ### datasets ###
 /Segmentation/COCO/
-/Segmentation/log/
-/Segmentation/gen/
+/Segmentation/log/segnet
 /Tacotron2-Wavenet-Korean-TTS/datasets/
 /Tacotron2-Wavenet-Korean-TTS/logdir-tacotron2/
 /Tacotron2-Wavenet-Korean-TTS/data/
