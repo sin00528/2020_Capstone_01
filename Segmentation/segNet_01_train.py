@@ -76,6 +76,7 @@ plt.legend(['Train', 'Test'], loc='upper left')
 #plt.show()
 plt.savefig(plotDir + '/vgg_segnet_loss.png')
 
+# send the msg to discord channel
 from discord_webhook import DiscordWebhook
 url = 'https://discordapp.com/api/webhooks/710208007618822145/4yUFIEoTa7kZFOhyJpSkalNn2NysrM6p5PFVG5iBDkt1ikJxBPwV3_J4FDYi40THgxvl'
 webhook = DiscordWebhook(url=url, content='Model Train completed...')
