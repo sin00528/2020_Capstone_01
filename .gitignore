@@ -9,6 +9,10 @@
 /Tacotron2-Wavenet-Korean-TTS/logdir-tacotron2/
 /Tacotron2-Wavenet-Korean-TTS/data/
 
+# ckpt files
+/Segmentation/log/segnet
+/Captioning/log/imgCaption
+
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
