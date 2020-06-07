@@ -54,7 +54,7 @@ units = 512
 top_k = 15000
 vocab_size = top_k + 1
 attention_features_shape = 64
-EPOCHS = 1
+EPOCHS = 20
 
 # sparse cross-entropy 손실 함수를 정의합니다.
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True, reduction='none')
@@ -144,7 +144,7 @@ hidden_layer = image_feature_extract_base_model.layers[-1].output
 image_features_extract_model = tf.keras.Model(new_input, hidden_layer)
 
 # Cache #
-cache_bottlenecks(img_name_vector, image_features_extract_model)
+#cache_bottlenecks(img_name_vector, image_features_extract_model)
 
 # Load Caption data and then preprocess
 # 가장 빈도수가 높은 15000개의 단어를 선택해서 Vocabulary set을 만들고,
