@@ -19,6 +19,8 @@ from keras.preprocessing import sequence
 from caption_model import BahdanauAttention, CNN_Encoder, RNN_Decoder
 from caption_utils import load_image, calc_max_length, plot_attention
 
+from pypapago import Translator
+
 # 학습을 위한 설정값들을 지정합니다.
 num_examples = 30000
 BATCH_SIZE = 64
@@ -39,6 +41,7 @@ TEST_LABEL = "../Segmentation/COCO/val_label.npy"
 
 CKPT_DIR = "log/imgCaption"
 INPUT_DIR = "gen/Inputs"
+OUTPUT_DIR = "gen/Outputs"
 
 
 # Load Train sets
@@ -128,7 +131,18 @@ ckpt.restore(ckpt_manager.latest_checkpoint)
 image_path =  INPUT_DIR + '/test.png'
 result, attention_plot = evaluate(image_path, max_length, attention_features_shape, encoder, decoder, image_features_extract_model, tokenizer)
 
-print ('Prediction Caption:', ' '.join(result))
+predicted_caption = ' '.join(result)
+predicted_caption = predicted_caption[:-5]
+translator = Translator()
+translated_caption = translator.translate(predicted_caption)
+
+print('Prediction Caption:', predicted_caption)
+print('Korean Caption : ',  translated_caption)
+
+# 한국어 캡션 저장
+f = open(OUTPUT_DIR+"/test.txt", mode='wt', encoding='utf-8')
+f.write(translated_caption)
+f.close()
 
 # Attention Plot
 plot_attention(image_path, result, attention_plot)
