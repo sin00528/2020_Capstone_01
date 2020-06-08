@@ -26,7 +26,7 @@ class Synthesizer(object):
         tf.reset_default_graph()
         self.sess.close()
 
-    def load(self, checkpoint_path, num_speakers=2, checkpoint_step=None, inference_prenet_dropout=True,model_name='tacotron'):
+    def load(self, checkpoint_path, num_speakers=2, checkpoint_step=None, inference_prenet_dropout=True, model_name='tacotron'):
         self.num_speakers = num_speakers
 
         if os.path.isdir(checkpoint_path):
