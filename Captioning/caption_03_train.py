@@ -9,6 +9,8 @@ import os
 from tqdm import tqdm
 
 import nltk
+from nltk.tokenize import RegexpTokenizer
+from nltk.translate.bleu_score import SmoothingFunction
 
 from keras.models import Model
 from keras.layers import Dense
@@ -22,6 +24,9 @@ from keras.models import Sequential
 
 from caption_model import BahdanauAttention, CNN_Encoder, RNN_Decoder
 from caption_utils import load_image, calc_max_length, plot_attention, cache_bottlenecks
+
+import warnings
+warnings.filterwarnings(action='ignore')
 
 # Setting dirs
 TRAIN_INPUT = "../Segmentation/COCO/train_input.npy"
@@ -257,17 +262,24 @@ result, attention_plot = evaluate(image, max_length, attention_features_shape, e
 #plot_attention(image, result, attention_plot)
 
 # Display Ground Truth, Prediction Caption, BLEU Score
-BLEUscore = nltk.translate.bleu_score.sentence_bleu([ground_truth_caption], result)
-print ('Ground Truth Caption : ', ground_truth_caption)
-print ('Prediction Caption:', ' '.join(result))
-print("BLEU Score : ", BLEUscore)
+print ('Ground Truth Caption : ', ground_truth_caption[8:-5])
+print ('Prediction Caption:', ' '.join(result)[:-5])
+
+tokenizer = RegexpTokenizer("[\w]+")
+tok_caption = tokenizer.tokenize(ground_truth_caption[7:-5])
+
+# Bleu Score
+BLEUscore = nltk.translate.bleu_score.sentence_bleu([tok_caption], result)
+print("BLEU Score: ", BLEUscore)
+
 
 # loss Plot
 plt.plot(loss_plot)
-plt.title("BLEU Score : {}".format(BLEUscore))
+plt.title("Loss graph")
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.savefig('log/plot/imgCap_loss.png')
+
 
 from discord_webhook import DiscordWebhook
 url = 'https://discordapp.com/api/webhooks/710208007618822145/4yUFIEoTa7kZFOhyJpSkalNn2NysrM6p5PFVG5iBDkt1ikJxBPwV3_J4FDYi40THgxvl'
