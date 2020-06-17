@@ -1,18 +1,3 @@
-# coding: utf-8
-
-"""
-python synthesizer.py --load_path logdir-tacotron2/moon+son_2019-02-27_00-21-42 --num_speakers 2 --speaker_id 0 --text "그런데 청년은 이렇게 말합니다"
-
-python synthesizer.py --load_path logdir-tacotron2/moon+son_2019-02-27_00-21-42 --num_speakers 2 --speaker_id 0 --text "이런 논란은 타코트론 논문 이후에 사라졌습니다"
-python synthesizer.py --load_path logdir-tacotron2/moon+son_2019-02-27_00-21-42 --num_speakers 2 --speaker_id 1 --text "이런 논란은 타코트론 논문 이후에 사라졌습니다"
-
-
-python synthesizer.py --load_path logdir-tacotron2/moon+son_2019-02-27_00-21-42 --num_speakers 2 --speaker_id 0 --text "오는 6월6일은 제64회 현충일입니다"
-python synthesizer.py --load_path logdir-tacotron2/moon+son_2019-02-27_00-21-42 --num_speakers 2 --speaker_id 1 --text "오는 6월6일은 제64회 현충일입니다"
-
-python synthesizer.py --load_path logdir-tacotron2/moon+son_2019-02-27_00-21-42 --num_speakers 2 --speaker_id 0 --text "오스트랄로피테쿠스 아파렌시스는 멸종된 사람족 종으로, 현재에는 뼈 화석이 발견되어 있다"
-python synthesizer.py --load_path logdir-tacotron2/moon+son_2019-02-27_00-21-42 --num_speakers 2 --speaker_id 1 --text "오스트랄로피테쿠스 아파렌시스는 멸종된 사람족 종으로, 현재에는 뼈 화석이 발견되어 있다"
-"""
 import io
 import os
 import re
@@ -41,7 +26,7 @@ class Synthesizer(object):
         tf.reset_default_graph()
         self.sess.close()
 
-    def load(self, checkpoint_path, num_speakers=2, checkpoint_step=None, inference_prenet_dropout=True,model_name='tacotron'):
+    def load(self, checkpoint_path, num_speakers=2, checkpoint_step=None, inference_prenet_dropout=True, model_name='tacotron'):
         self.num_speakers = num_speakers
 
         if os.path.isdir(checkpoint_path):
@@ -339,7 +324,7 @@ if __name__ == "__main__":
     makedirs(config.sample_path)
 
     synthesizer = Synthesizer()
-    synthesizer.load(config.load_path, config.num_speakers, config.checkpoint_step,inference_prenet_dropout=False)
+    synthesizer.load(config.load_path, config.num_speakers, config.checkpoint_step, inference_prenet_dropout=False)
 
     audio = synthesizer.synthesize(texts=[config.text],base_path=config.sample_path,speaker_ids=[config.speaker_id],
                                    attention_trim=True,base_alignment_path=config.base_alignment_path,isKorean=config.is_korean)[0]

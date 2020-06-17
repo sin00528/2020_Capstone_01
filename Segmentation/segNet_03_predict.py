@@ -25,7 +25,7 @@ model = vgg_segnet(n_classes=91, input_height=416, input_width=608, encoder_leve
 model.load_weights(ckPtDir + "/vgg_segnet.199")
 
 # not using overlay
-#out = model.predict_segmentation(inp = 'test.png', out_fname = 'test_out.png')
+#out = model.predict_segmentation(inp = 'gen/Inputs/test.png', out_fname = 'gen/Outputs/test_out.png')
 
 # using overlay
-predict(model, overlay_img=True, inp = 'test.png', out_fname = 'test_out.png')
+out = model.predict_segmentation(overlay_img=True, inp = 'gen/Inputs/test.png', out_fname = 'gen/Outputs/test_out.png')

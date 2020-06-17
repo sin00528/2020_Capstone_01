@@ -4,13 +4,13 @@ import pandas as pd
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+import seaborn as sns
 from PIL import Image
 import os
 from tqdm import tqdm
 
 import nltk
 from nltk.tokenize import RegexpTokenizer
-from nltk.translate.bleu_score import SmoothingFunction
 
 from keras.models import Model
 from keras.layers import Dense
@@ -149,7 +149,7 @@ hidden_layer = image_feature_extract_base_model.layers[-1].output
 image_features_extract_model = tf.keras.Model(new_input, hidden_layer)
 
 # Cache #
-#cache_bottlenecks(img_name_vector, image_features_extract_model)
+#cache_bottlenecks(test_img_name_vector, image_features_extract_model)
 
 # Load Caption data and then preprocess
 # 가장 빈도수가 높은 15000개의 단어를 선택해서 Vocabulary set을 만들고,
@@ -157,7 +157,6 @@ image_features_extract_model = tf.keras.Model(new_input, hidden_layer)
 tokenizer = tf.keras.preprocessing.text.Tokenizer(num_words=top_k,
                                                   oov_token="<unk>",
                                                   filters='!"#$%&()*+.,-/:;=?@[\]^_`{|}~ ')
-
 tokenizer.fit_on_texts(train_captions)
 # 가장 긴 문장보다 작은 문장들은 나머지 부분은 <pad>로 padding합니다.
 tokenizer.word_index['<pad>'] = 0
@@ -180,7 +179,7 @@ img_name_train, img_name_val, cap_train, cap_val = train_test_split(img_name_vec
 print('train image size:', len(img_name_train), 'train caption size:', len(cap_train))
 print('validation image size:',len(img_name_val), 'validation caption size:', len(cap_val))
 
-num_steps = len(img_name_train) // BATCH_SIZE
+num_steps = len(img_name_vector) // BATCH_SIZE
 
 # Load Cashed data
 # disk에 caching 해놓은 numpy 파일들을 읽습니다.
@@ -243,45 +242,40 @@ for epoch in range(start_epoch+1, EPOCHS+1):
     
 print('Training Finished !')
 
-# validation set에서 random하게 1장의 이미지를 뽑아 해당 이미지에 대한 captioning을 진행합니다.
-rid = np.random.randint(0, len(img_name_val))
-image = img_name_val[rid]
-ground_truth_caption = ' '.join([tokenizer.index_word[i] for i in cap_val[rid] if i not in [0]])
-result, attention_plot = evaluate(image, max_length, attention_features_shape, encoder, decoder,
-                                  image_features_extract_model, tokenizer)
 
-# Bleu metorc 예시
-"""
-    hypothesis = ['It', 'is', 'a', 'cat', 'at', 'room']
-    reference = ['It', 'is', 'a', 'cat', 'inside', 'the', 'room']
-    #there may be several references
-    BLEUscore = nltk.translate.bleu_score.sentence_bleu([ground_truth_caption], result)
-    print(BLEUscore)
-"""
-# Attention Plot
-#plot_attention(image, result, attention_plot)
+# caption 문장을 띄어쓰기 단위로 split해서 tokenize 합니다.
+test_seqs = tokenizer.texts_to_sequences(test_captions)
+# 길이가 짧은 문장들에 대한 padding을 진행합니다.
+test_cap = tf.keras.preprocessing.sequence.pad_sequences(test_seqs, padding='post')
 
-# Display Ground Truth, Prediction Caption, BLEU Score
-print ('Ground Truth Caption : ', ground_truth_caption[8:-5])
-print ('Prediction Caption:', ' '.join(result)[:-5])
+regexTokenizer = RegexpTokenizer("[\w]+")
 
-tokenizer = RegexpTokenizer("[\w]+")
-tok_caption = tokenizer.tokenize(ground_truth_caption[7:-5])
+BLEUscores = []
+# Test set에대한 BLEU Score를 계산합니다.
+for idx in tqdm(range(len(test_img_name_vector))):
+#for idx in tqdm(range(1000)):
+    image = test_img_name_vector[idx]
+    ground_truth_caption = ' '.join([tokenizer.index_word[i] for i in test_cap[idx] if i not in [0]])
+    result, _ = evaluate(image, max_length, attention_features_shape, encoder, decoder,
+                         image_features_extract_model, tokenizer)
+    result = ' '.join(result)[:-5]
+    tok_caption = regexTokenizer.tokenize(ground_truth_caption[7:-5])
+    BLEUscore = nltk.translate.bleu_score.sentence_bleu([tok_caption], result)
+    BLEUscores.append(BLEUscore)
 
-# Bleu Score
-BLEUscore = nltk.translate.bleu_score.sentence_bleu([tok_caption], result)
-print("BLEU Score: ", BLEUscore)
+# Average Bleu Score 
+avgBLEU = np.sum(BLEUscores)/len(BLEUscores)
+print("Average BLEU Score: {:.6f}".format(avgBLEU))
 
+# bleu Plot
+sns.distplot(BLEUscores, kde=False)
+plt.title("Average BLEU Score: {:.6f}".format(avgBLEU))
+plt.ylabel('Frequency')
+plt.xlabel('BLEU score')
+plt.savefig('log/plot/imgCap_bleu.png')
 
-# loss Plot
-plt.plot(loss_plot)
-plt.title("Loss graph")
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.savefig('log/plot/imgCap_loss.png')
-
-
+# send a msg to discord channel
 from discord_webhook import DiscordWebhook
 url = 'https://discordapp.com/api/webhooks/710208007618822145/4yUFIEoTa7kZFOhyJpSkalNn2NysrM6p5PFVG5iBDkt1ikJxBPwV3_J4FDYi40THgxvl'
-webhook = DiscordWebhook(url=url, content='Captioning model training is completed...')
+webhook = DiscordWebhook(url=url, content='Calculating BLUE Score is completed...')
 response = webhook.execute()
