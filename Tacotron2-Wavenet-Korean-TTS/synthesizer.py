@@ -156,7 +156,9 @@ def plot_graph_and_save_audio(args,
     idx, (wav, alignment, path, text, sequence,mel) = args
 
     if base_path:
-        plot_path = "{}/{}.png".format(base_path, get_time())
+        #edited
+        #plot_path = "{}/{}.png".format(base_path, get_time())
+        plot_path = "gen/Outputs/test.png"
     elif path:
         plot_path = path.rsplit('.', 1)[0] + ".png"
     else:
