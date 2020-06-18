@@ -26,7 +26,7 @@ enum34==1.1.6
 falcon==2.0.0
 ffmpeg==1.4
 ffprobe==0.5
-Flask==0.12.2
+Flask==1.0
 Flask-Cors==3.0.3
 future==0.16.0
 gapic-google-cloud-datastore-v1==0.15.3
