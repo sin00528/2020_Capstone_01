@@ -156,7 +156,7 @@ python-dateutil==2.6.1
 pytz==2017.2
 PyWavelets==1.1.1
 pyxdg==0.25
-PyYAML==5.3.1
+PyYAML==5.4
 pyzmq==18.1.1
 qtconsole==4.6.0
 requests==2.23.0
