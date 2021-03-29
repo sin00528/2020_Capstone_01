@@ -146,7 +146,7 @@ pycrypto==2.6.1
 pydot==1.4.1
 pydotplus==2.0.2
 pydub==0.20.0
-Pygments==2.2.0
+Pygments==2.7.4
 pygobject==3.26.1
 pypapago==0.1.1.1
 pyparsing==2.2.0
